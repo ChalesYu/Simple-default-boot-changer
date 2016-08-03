@@ -1,7 +1,7 @@
 # Simple-default-boot-changer
 it rely on clover bootloader change default boot OS
 类似于bootcamp的功能...
-原理是替换config.plist
+但原理是替换config.plist
 
 在我的asus s400ca上同时安装了hackintosh和windows
 
