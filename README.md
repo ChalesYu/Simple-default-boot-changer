@@ -9,12 +9,9 @@ it rely on clover bootloader change default boot OS
 
 将配置好的clover文件夹放入  \EFI  （为了能方便修改clover文件夹）
 
-修改  / resource / lib.h 的这段 
-
-
 我的是F盘，对应路径
 
-在config.h 里修改为你的路径
+在/resource/config.h 里修改为你的路径
 
 s400ca 在 VS2015上编译通过
  
