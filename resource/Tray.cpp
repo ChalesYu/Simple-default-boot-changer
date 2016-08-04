@@ -18,10 +18,13 @@ it rely on clover bootloader change default boot OS
 #include <cstring>
 #include "stdio.h"
 #include <stdlib.h>
-#include <sstream>
-#include "lib.h"
+#include <sstream> 
 
-bool clmm::show_detail = true;  // true -显示详细更改过程  false -隐藏详细....
+//#include "config.h"
+
+#include "lib.h"
+bool clmm::show_detail = false;  // true -显示详细更改过程  false -隐藏详细....
+
 
 using namespace std;
 
@@ -190,7 +193,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 				if (cmd == ID_EXIT)
 					PostMessage(hWnd, WM_DESTROY, NULL, NULL);
 				if (cmd == ID_SHOW2)
-					MessageBox(hWnd, "默认启动系统修改程序\n\t\t-Chuck.Yu", "关于", MB_OK);
+					MessageBox(hWnd, "默认启动系统修改程序\n基于Win32 API实现系统托盘程序\n\t\t-Chuck.Yu", "关于", MB_OK);
 				if (cmd == ID_SHOW3)
 				{
 				//	log("win");
@@ -263,7 +266,11 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 			log("mac已经会在关机(或重启)后自动启动");
 		}
 		else { log("下次关机(或重启)后将自动启动mac"); }
-	MessageBox(hWnd,"是否立即重启并进入到Mac?", "注意", MB_YESNO);
+		if (IDYES == MessageBox(hWnd, "是否立即重启并进入到Mac?", "注意", MB_YESNO))
+		{
+			if (o.show_detail) { log("reboot"); }
+			o.reboot();
+		}
 	}
  void  check_err(int e1,int e2)
 	{

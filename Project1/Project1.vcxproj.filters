@@ -26,6 +26,9 @@
     <ClInclude Include="..\resource\lib.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\resource\config.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\resource\resource.rc">
