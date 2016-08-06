@@ -1,5 +1,8 @@
 # Simple-default-boot-changer
+一个基于win32 API实现的系统托盘程序
+
 it rely on clover bootloader change default boot OS
+
 类似于bootcamp的功能...
 但原理是替换config.plist
 
