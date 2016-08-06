@@ -38,7 +38,7 @@ using namespace std;
     HMENU hMenu;            //托盘菜单
 	void cw(clmm a, int x);  //change to win
 	void cm(clmm a, int x);	// change to mac
-	void  check_err(int e1, int e2);	// check error
+	void  check_err(int e1, int e2);	// 判定中途出现错误
 	
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -261,16 +261,11 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 		a.delf();
 		a.movfm();
 		check_err(err1,err2);
-		if (x == 2)
-		{
-			log("mac已经会在关机(或重启)后自动启动");
-		}
-		else { log("下次关机(或重启)后将自动启动mac"); }
-		if (IDYES == MessageBox(hWnd, "是否立即重启并进入到Mac?", "注意", MB_YESNO))
-		{
-			if (o.show_detail) { log("reboot"); }
-			o.reboot();
-		}
+
+
+		o.askreboot_m(x);
+ 
+
 	}
  void  check_err(int e1,int e2)
 	{

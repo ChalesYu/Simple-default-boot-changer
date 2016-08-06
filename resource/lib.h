@@ -69,7 +69,32 @@ class clmm :public core   //clover loader manage maker
 {
 public: 
  clmm(const char *fromw,const char *fromm,const char *to,int orgin):core(orgin){fw=fromw;fm=fromm;t=to;a=to;}
+/////
+ void askreboot_m(int now)
+ {
 
+	 if (now == 2)
+	 {
+		// log("mac已经会在关机(或重启)后自动启动");
+		// o.askreboot_m(x);
+		 if (IDYES == MessageBox(hWnd, "mac已经会在关机(或重启)后自动启动\n是否立即重启并进入到Mac?", "注意", MB_YESNO))
+	 {
+		 if (show_detail) { log("reboot"); }
+		reboot();
+	 }
+
+	 }
+	 else {
+		 //log("下次关机(或重启)后将自动启动mac");
+		 if (IDYES == MessageBox(hWnd, "下次关机(或重启)后将自动启动mac\n是否立即重启并进入到Mac?", "注意", MB_YESNO))
+		 {
+			 if (show_detail) { log("reboot"); }
+			 reboot();
+		 }
+	 }
+
+	
+ }
 /////
 void  delf ()
 {
