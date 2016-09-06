@@ -68,7 +68,15 @@ int org;
 class clmm :public core   //clover loader manage maker
 {
 public: 
- clmm(const char *fromw,const char *fromm,const char *to,int orgin):core(orgin){fw=fromw;fm=fromm;t=to;a=to;}
+	clmm(const char *fromw, const char *fromm, const char *to, const char *backup, int orgin) :core(orgin) {
+		fw = fromw; fm = fromm; dt = to; mt = to;
+ //////backup config.plist
+		//remove(backup);
+		//CopyFile(,, false);
+	//	CopyFile(to, backup, false);
+
+		/////
+ }
 /////
  void askreboot_m(int now)
  {
@@ -98,11 +106,11 @@ public:
 /////
 void  delf ()
 {
-if( remove(a))
+if( remove(dt))
 {err2 = 1;
 	//printf("Could not delete the file %s \n",a);
 	LPTSTR szBuffer= new TCHAR[1024];
-	wsprintf(szBuffer,"无法删除文件 %s", a);
+	wsprintf(szBuffer,"无法删除文件 %s", dt);
 	MessageBox(hWnd, szBuffer, "错误", MB_OK);
 	
 }
@@ -111,7 +119,7 @@ else
 	//log("rm complete");
 	if (show_detail) {
 		LPTSTR csz = new TCHAR[1024];
-		wsprintf(csz, "成功删除文件 %s", a);
+		wsprintf(csz, "成功删除文件 %s", dt);
 		MessageBox(hWnd, csz, "提示", MB_OK);
 	}
 	}
@@ -119,11 +127,11 @@ else
 /////
 void  movfw ()
 {
-	if (!CopyFile(fw, t, false))
+	if (!CopyFile(fw, mt, false))
 	{//printf("Could not move the file %s \n",fw);
 		err2 = 1;
 		LPTSTR szBuffer = new TCHAR[1024];
-		wsprintf(szBuffer, "win : 无法移动文件%s到%s", fw,t);
+		wsprintf(szBuffer, "win : 无法移动文件%s到%s", fw,mt);
 		MessageBox(hWnd, szBuffer, "错误", MB_OK);
 		delete szBuffer;
 		
@@ -132,7 +140,7 @@ void  movfw ()
 		//log("win mov complete");
 		if (show_detail) {
 			LPTSTR szBuffer = new TCHAR[1024];
-			wsprintf(szBuffer, "win : 成功移动文件%s到%s", fw, t);
+			wsprintf(szBuffer, "win : 成功移动文件%s到%s", fw, mt);
 			MessageBox(hWnd, szBuffer, "提示", MB_OK);
 			delete szBuffer;
 		}
@@ -141,11 +149,11 @@ void  movfw ()
 /////
 void  movfm ()
 {
-	if (!CopyFile(fm, t, false))
+	if (!CopyFile(fm, mt, false))
 	{err2 = 1;
 		//printf("Could not move the file %s \n", fm);
 		LPTSTR szBuffer = new TCHAR[1024];
-		wsprintf(szBuffer, "mac : 无法移动文件%s到%s", fw, t);
+		wsprintf(szBuffer, "mac : 无法移动文件%s到%s", fw, mt);
 		MessageBox(hWnd, szBuffer, "错误", MB_OK);
 		
 	}
@@ -153,13 +161,13 @@ void  movfm ()
 		//log("mac mov complete");
 		if (show_detail) {
 			LPTSTR szBuffer = new TCHAR[1024];
-			wsprintf(szBuffer, "mac : 成功移动文件%s到%s", fw, t);
+			wsprintf(szBuffer, "mac : 成功移动文件%s到%s", fw, mt);
 			MessageBox(hWnd, szBuffer, "提示", MB_OK);
 		}
 	}
 }
 /////
 private:
-const char *fm,*fw,*t,*a;
+	const char *fm, *fw, *mt, *dt;
 //static bool show_detail;
 };

@@ -42,9 +42,14 @@ using namespace std;
 	
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-int news = 0; int def = 1; static int a = 9;static int now;
-clmm o(wconfig_loc, mconfig_loc, config_destination, a);
-    //实例化托盘
+
+int news = 0; 
+const int reset_OS_num = 1; //incase if don't have (or not read) stat number.  GET RESET
+static int Default_OS_num = 9;  //if had read stat.  This is a temp
+static int Now_OS_num;
+clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, Default_OS_num);
+
+//实例化托盘
     void InitTray(HINSTANCE hInstance, HWND hWnd)
     {
         nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -56,11 +61,11 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
         lstrcpy(nid.szTip,"启动管理程序"); 
 
         hMenu = CreatePopupMenu();//生成托盘菜单
-        //为托盘菜单添加两个选项
+        //为托盘菜单添加选项
         AppendMenu(hMenu, MF_STRING, ID_SHOW, TEXT("提示"));
+		AppendMenu(hMenu, MF_STRING, ID_SHOW5, TEXT("立即重启到 OS X"));
 		AppendMenu(hMenu, MF_STRING, ID_SHOW3, TEXT("默认启动win"));
 		AppendMenu(hMenu, MF_STRING, ID_SHOW4, TEXT("默认启动mac"));
-	//	AppendMenu(hMenu, MF_STRING, ID_SHOW5, TEXT("重新启动"));
          AppendMenu(hMenu, MF_STRING, ID_SHOW2, TEXT("关于"));
         AppendMenu(hMenu, MF_STRING, ID_EXIT, TEXT("退出"));
 
@@ -110,13 +115,14 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 
         hWnd = CreateWindowEx(WS_EX_TOOLWINDOW, APP_NAME, APP_NAME, WS_POPUP, CW_USEDEFAULT,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
-		/////////
-		ofstream out;
+		///////////初始化...
+		ofstream out_default_file;
 		////
 		int indust=0;
 		ifstream init(indust_mode,ios_base::in);
 		init >> indust;
-		//err(0);
+		//
+		//err(是否在施工模式);
 		if (indust == 1)
 		{
 			MessageBox(hWnd, "已启动施工模式，程序将自动退出。\n(若要结束施工，请删除indust文件)", "请注意", MB_OK);
@@ -126,38 +132,76 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 			exit(0);
 		}
 		////
+
+		///  backup config.plist as config_backuped.plist
+		if (CopyFile(config_destination, config_backup_destination, true)) {
+			lstrcpy(nid.szInfoTitle, "已备份config.plist为config_backuped.plist");
+			lstrcpy(nid.szInfo, TEXT("启动管理程序"));
+			nid.uTimeout = 1000;
+			Shell_NotifyIcon(NIM_MODIFY, &nid);
+		
+		}
+		else
+		{
+			if (o.show_detail) {
+				lstrcpy(nid.szInfoTitle, "config已存在");
+				lstrcpy(nid.szInfo, TEXT("启动管理程序"));
+				nid.uTimeout = 1000;
+				Shell_NotifyIcon(NIM_MODIFY, &nid);
+			}
+		};
+		// hmm... end backup config  now safely
+
+		/////
+		/// file== stat  
 		ifstream file(stat_loc, ios_base::in);
 		if (!file) {
 		log( "Unable to open file,Creat it");
-			//       exit(1); // terminate with error
-			out.open("F:\\EFI\\CLOVER\\stat", ios_base::out);
-			if (!out) {  MessageBox(hWnd,"Unable to open out", "错误", MB_OK);	}
-			out << def;
+			 // terminate with error
+			out_default_file.open("F:\\EFI\\CLOVER\\stat", ios_base::out);
+			if (!out_default_file) {  MessageBox(hWnd,"Unable to open out and set out_default_file with '1'", "错误", MB_OK);	}
+			out_default_file << reset_OS_num;
 			news = 1;
 		}
 		if (!news)
 		{
-			file >> a;
+			file >> Default_OS_num; //stat_loc
 			LPTSTR szBuffer = new TCHAR[50];
-			wsprintf(szBuffer,"%d",a);
+			wsprintf(szBuffer,"%d",Default_OS_num);
 		//	MessageBox(hWnd, szBuffer ,"当前系统值", MB_OK);
 		}
 		//file <<str<<endl;
 		file.close();
-		out.close();
+		out_default_file.close();
 	//	ui(a);
 
-
 		////////
-		//MessageBox(hWnd,"初始化成功","提示", MB_OK);
+	
 		if (clmm::show_detail) {
 			ShowTrayMsg();
 		}
 		ShowWindow(hWnd, iCmdShow);
         UpdateWindow(hWnd);
-
-		now = a;
-        InitTray(hInstance, hWnd);          //实例化托盘
+		Now_OS_num = Default_OS_num; 
+  InitTray(hInstance, hWnd);          //实例化托盘
+		/*设置要禁用的选项*/
+		if (Now_OS_num == 2) {
+			EnableMenuItem(hMenu, ID_SHOW4, MF_GRAYED);
+			EnableMenuItem(hMenu, ID_SHOW3, MF_ENABLED);
+		}//lstrcpy(nid.szInfoTitle, "在开机(或重启)后Macintosh自动启动");
+		else if (Now_OS_num == 1) {
+			EnableMenuItem(hMenu, ID_SHOW3, MF_GRAYED);
+			EnableMenuItem(hMenu, ID_SHOW4, MF_ENABLED);
+		}	//lstrcpy(nid.szInfoTitle, "在开机(或重启)后Windows自动启动");
+		else
+		{
+			//////.....
+		};
+		/*设置要禁用的选项*/
+	
+		
+		//MessageBox(hWnd,"初始化成功","提示", MB_OK);
+      
        // SetTimer(hWnd, 3, 1000, NULL);      //定时发消息，演示气泡提示功能
         while (GetMessage(&msg, NULL, 0, 0))
         {
@@ -183,29 +227,48 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 				SetForegroundWindow(hWnd);
 
 				//使菜单某项变灰
-				//EnableMenuItem(hMenu, ID_SHOW, MF_GRAYED);
-
+				EnableMenuItem(hMenu, ID_SHOW5, MF_GRAYED);
+				
 				//显示并获取选中的菜单
 				int cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, NULL, hWnd, NULL);
 				if (cmd == ID_SHOW)
 					//	MessageBox(hWnd, APP_TIP, APP_NAME, MB_OK);
-					MessageBox(hWnd, "test", "S", MB_OKCANCEL);
+					MessageBox(hWnd, "待编写......", "提示", MB_OK);     //提示
 				if (cmd == ID_EXIT)
 					PostMessage(hWnd, WM_DESTROY, NULL, NULL);
 				if (cmd == ID_SHOW2)
-					MessageBox(hWnd, "默认启动系统修改程序\n基于Win32 API实现系统托盘程序\n\t\t-Chuck.Yu", "关于", MB_OK);
+					MessageBox(hWnd, "默认启动系统修改程序\n基于Win32 API实现系统托盘程序\n\t\t-Chales.Yu", "关于", MB_OK);
 				if (cmd == ID_SHOW3)
 				{
 				//	log("win");
-					cw(o, now);
-					now = 1;
+					cw(o, Now_OS_num);
+					Now_OS_num = 1;
+					EnableMenuItem(hMenu, ID_SHOW3, MF_GRAYED);
+					EnableMenuItem(hMenu, ID_SHOW4, MF_ENABLED);
 				}
 				if (cmd == ID_SHOW4)
 				{
 				//	log("mac");
-					cm(o, now);
-					now = 2;
+					cm(o, Now_OS_num);
+					Now_OS_num = 2;
+					EnableMenuItem(hMenu, ID_SHOW4, MF_GRAYED);
+					EnableMenuItem(hMenu, ID_SHOW3, MF_ENABLED);
 				}
+				////////////////////////////////////////
+		/*		if (cmd == ID_SHOW5) // 重启到OS X
+				{
+					o.xiefile(2);
+					//
+					o.delf();
+					o.movfm();
+					o.reboot();
+					//	log("now restart mac");
+
+				//	cm(o, now);
+				//	now = 2;
+				}
+				*/
+				///////////////////////////////////////////
 			}
 			break;
 			case WM_LBUTTONDOWN:
@@ -216,7 +279,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, a);
 				wsprintf(szBuffer1, "%d", x);
 				MessageBox(hWnd, szBuffer1, "当前系统值", MB_OK); 
 			}*/
-				ShowTrayMsgshow(now);
+				ShowTrayMsgshow(Now_OS_num);
 			break;
 			case WM_LBUTTONDBLCLK:
 				break;
