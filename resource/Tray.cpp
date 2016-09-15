@@ -23,7 +23,7 @@ it rely on clover bootloader change default boot OS
 //#include "config.h"
 
 #include "lib.h"
-bool core::show_detail = false;  // true -显示详细更改过程  false -隐藏详细....
+bool clmm::show_detail = false;  // true -显示详细更改过程  false -隐藏详细....
 
 
 using namespace std;
@@ -81,16 +81,6 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
         Shell_NotifyIcon(NIM_MODIFY, &nid);
     }
 	//
-//  !welcome!
-	void ini_welcome()
-	{
-		lstrcpy(nid.szInfoTitle, "欢迎使用！");
-		lstrcpy(nid.szInfo, TEXT("来自此电脑的问候"));
-		nid.uTimeout = 500;
-		Shell_NotifyIcon(NIM_MODIFY, &nid);
-	}
-	//
-	//
 	void ShowTrayMsgshow(int n)
 
 	{
@@ -125,7 +115,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 
         hWnd = CreateWindowEx(WS_EX_TOOLWINDOW, APP_NAME, APP_NAME, WS_POPUP, CW_USEDEFAULT,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
-		///////////////////////**///////**//////**///////**////////**///////////初始化...
+		///////////初始化...
 		ofstream out_default_file;
 		////
 		int indust=0;
@@ -198,12 +188,10 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 		if (Now_OS_num == 2) {
 			EnableMenuItem(hMenu, ID_SHOW4, MF_GRAYED);
 			EnableMenuItem(hMenu, ID_SHOW3, MF_ENABLED);
-			EnableMenuItem(hMenu, ID_SHOW5, MF_ENABLED);
 		}//lstrcpy(nid.szInfoTitle, "在开机(或重启)后Macintosh自动启动");
 		else if (Now_OS_num == 1) {
 			EnableMenuItem(hMenu, ID_SHOW3, MF_GRAYED);
 			EnableMenuItem(hMenu, ID_SHOW4, MF_ENABLED);
-			EnableMenuItem(hMenu, ID_SHOW5, MF_GRAYED);
 		}	//lstrcpy(nid.szInfoTitle, "在开机(或重启)后Windows自动启动");
 		else
 		{
@@ -215,8 +203,6 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 		//MessageBox(hWnd,"初始化成功","提示", MB_OK);
       
        // SetTimer(hWnd, 3, 1000, NULL);      //定时发消息，演示气泡提示功能
-		ini_welcome();
-	   ///////////**/////**////////////**//////////**///////**///////////初始化完成.......
         while (GetMessage(&msg, NULL, 0, 0))
         {
             TranslateMessage(&msg);
@@ -241,7 +227,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 				SetForegroundWindow(hWnd);
 
 				//使菜单某项变灰
-			//	EnableMenuItem(hMenu, ID_SHOW5, MF_GRAYED);
+				EnableMenuItem(hMenu, ID_SHOW5, MF_GRAYED);
 				
 				//显示并获取选中的菜单
 				int cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, NULL, hWnd, NULL);
@@ -259,7 +245,6 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 					Now_OS_num = 1;
 					EnableMenuItem(hMenu, ID_SHOW3, MF_GRAYED);
 					EnableMenuItem(hMenu, ID_SHOW4, MF_ENABLED);
-					EnableMenuItem(hMenu, ID_SHOW5, MF_GRAYED);
 				}
 				if (cmd == ID_SHOW4)
 				{
@@ -268,11 +253,6 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 					Now_OS_num = 2;
 					EnableMenuItem(hMenu, ID_SHOW4, MF_GRAYED);
 					EnableMenuItem(hMenu, ID_SHOW3, MF_ENABLED);
-					EnableMenuItem(hMenu, ID_SHOW5, MF_ENABLED);
-				}
-				if (cmd == ID_SHOW5) // 重启到OS X
-				{
-					o.reboot();
 				}
 				////////////////////////////////////////
 		/*		if (cmd == ID_SHOW5) // 重启到OS X
@@ -322,65 +302,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
-	////////////////////
-	///area
-	void cw(clmm a, int x)// a - action_item  x - now_sys_status
-	{
-		a.xiefile(1);
-		//
-	//	a.delf();
-	/*	a.movfw();*/
-	//	check_err(err1, err2);
-	if(	a.config_file_change(1))
-	{ 	if (x == 1)
-		{
-			log("win已经会在关机(或重启)后自动启动");
-		}
-		else { log("下次关机(或重启)后将自动启动win"); }
-	}
-	else
-	{
-		char errBuffer[50];
-		wsprintf(errBuffer, "修改默认启动项目出现错误，未知默认启动的系统！\n 本程序将退出！  错误代码0x01");
-		//MessageBox(hWnd, szBuffer, "提示", MB_OK);
-		MessageBox(hWnd, errBuffer, "错误", MB_OK);
-		//delete[]szBuffer;
-		Shell_NotifyIcon(NIM_DELETE, &nid);
-		PostQuitMessage(0);
-		exit(1);
-	};
 
-	
-
-	}
-	void cm(clmm a, int x) // a - action_item  x - now_sys_status
-	{
-		a.xiefile(2);
-		//
-	//	a.delf();
-	/*	a.movfm(); */
-	//	check_err(err1, err2);
-		if(a.config_file_change(2))
-		{ a.askreboot_m(x);}
-		else
-		{
-char errBuffer[50];
-		wsprintf(errBuffer, "修改默认启动项目出现错误，未知默认启动的系统！\n 本程序将退出！  错误代码0x02");
-		//MessageBox(hWnd, szBuffer, "提示", MB_OK);
-		MessageBox(hWnd, errBuffer, "错误", MB_OK);
-		//delete[]szBuffer;
-		Shell_NotifyIcon(NIM_DELETE, &nid);
-		PostQuitMessage(0);
-		exit(1);
-		};
-		
-		
-	}
-
-///////////////
-
-	//backup
-	/*
 	void cw(clmm a, int x)
 	{
 		a.xiefile(1);
@@ -404,10 +326,10 @@ char errBuffer[50];
 		check_err(err1,err2);
 
 
-		a.askreboot_m(x);
+		o.askreboot_m(x);
+ 
+
 	}
-	*/
-	//backuped
  void  check_err(int e1,int e2)
 	{
 		int n=0;
