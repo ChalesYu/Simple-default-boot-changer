@@ -16,7 +16,9 @@ it rely on clover bootloader change default boot OS
 
 在/resource/config.h 里修改为你的路径
 
-更新添加 备份plist文件为config_backuped.plist
+更新 添加 备份plist文件为config_backuped.plist
+更新 直接在config.plist内搜索名称进行替换 摆脱对edit文件夹的依赖 具体见config.h
+
 
 s400ca 在 VS2015上编译通过
  
