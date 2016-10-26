@@ -5,7 +5,7 @@ Simple default boot changer
 
 win和mac切换默认启动
 it rely on clover bootloader change default boot OS
-原理是替换config.plist
+原理是替换config.plist 内部的数据
 
 
 */
@@ -126,8 +126,14 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
         hWnd = CreateWindowEx(WS_EX_TOOLWINDOW, APP_NAME, APP_NAME, WS_POPUP, CW_USEDEFAULT,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
 		///////////////////////**///////**//////**///////**////////**///////////初始化...
+		if (!o.start()) ////check if program opened
+		{
+Shell_NotifyIcon(NIM_DELETE, &nid);
+			PostQuitMessage(0);
+			exit(-1);
+		}
+		///////
 		ofstream out_default_file;
-		////
 		int indust=0;
 		ifstream init(indust_mode,ios_base::in);
 		init >> indust;
@@ -222,7 +228,7 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        return msg.wParam;
+        return (int) msg.wParam;
     }
 
 	LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -353,6 +359,24 @@ clmm o(wconfig_loc, mconfig_loc, config_destination, config_backup_destination, 
 	
 
 	}
+	//backup
+	/*
+	void cw(clmm a, int x)
+	{
+		a.xiefile(1);
+		//
+		a.delf();
+		a.movfw();
+		check_err(err1, err2);
+		if (x == 1)
+		{
+			log("win已经会在关机(或重启)后自动启动");
+		}
+		else { log("下次关机(或重启)后将自动启动win"); }
+	
+	}
+	*/
+	////////////
 	void cm(clmm a, int x) // a - action_item  x - now_sys_status
 	{
 		a.xiefile(2);
@@ -377,24 +401,7 @@ char errBuffer[50];
 		
 	}
 
-///////////////
-
-	//backup
 	/*
-	void cw(clmm a, int x)
-	{
-		a.xiefile(1);
-		//
-		a.delf();
-		a.movfw();
-		check_err(err1, err2);
-		if (x == 1)
-		{
-			log("win已经会在关机(或重启)后自动启动");
-		}
-		else { log("下次关机(或重启)后将自动启动win"); }
-	
-	}
 	void cm(clmm a, int x)
 	{
 		a.xiefile(2);
@@ -408,6 +415,7 @@ char errBuffer[50];
 	}
 	*/
 	//backuped
+	///////////////
  void  check_err(int e1,int e2)
 	{
 		int n=0;

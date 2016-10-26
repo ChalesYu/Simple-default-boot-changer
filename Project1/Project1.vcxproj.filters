@@ -39,5 +39,8 @@
     <Image Include="..\resource\ico.ico">
       <Filter>资源文件</Filter>
     </Image>
+    <Image Include="..\resource\bitbug_favicon.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

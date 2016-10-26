@@ -30,6 +30,7 @@
     <ResourceCompile Include="..\resource\resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\resource\bitbug_favicon.ico" />
     <Image Include="..\resource\ico.ico" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

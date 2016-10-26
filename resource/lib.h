@@ -14,6 +14,28 @@ HWND hWnd;
 class core {
 public :
     core (int rec ): org(rec)  { }
+	bool start( ) //check if it opened
+	{
+		HANDLE hmutex;
+	//	CString= strClassName = "clmm";
+		hmutex=OpenMutex(MUTEX_ALL_ACCESS, FALSE,"clmm");
+		if (hmutex == NULL)
+
+		{//表示没有其它实例在运行.创建  
+
+			hmutex = CreateMutex(NULL, TRUE,"clmm");
+			return TRUE;
+		}
+		else
+
+		{//表示已经有一个实例在运行  
+
+			MessageBox(hWnd, "程序已经在运行了", "错误", MB_OK);
+
+			return FALSE;
+
+		}
+	}
 int  showf(){
     /*********debug********/
     int b;
@@ -217,7 +239,7 @@ char *strstr_rep(char *source, const char *old, const char *ne)//字符替换
 //	cout << "replace" << '\n';
 	char *org = source;
 	char temp[65535];
-	int old_length = strlen(old);//获得将被替换的字符串的大小
+	int old_length = (int) strlen(old);//获得将被替换的字符串的大小
 //	int new_length = strlen(ne);
 	int i, j, k,location = -1;
 	for (i = 0; source[i] && (location == -1); ++i)//location查找将被替换的字符串的位置
