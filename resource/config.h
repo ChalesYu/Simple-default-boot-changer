@@ -1,4 +1,5 @@
 //// 以下自定义区域 custom area
+#define about_hint   "待编写......" //关于中的提示
 #define indust_mode  "F:\\EFI\\CLOVER\\indust" //施工状态文件
 #define stat_loc  "F:\\EFI\\CLOVER\\stat"   //状态文件
 #define wconfig_loc  "F:\\EFI\\CLOVER\\edit\\w.plist"  //默认win

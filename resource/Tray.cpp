@@ -253,11 +253,11 @@ Shell_NotifyIcon(NIM_DELETE, &nid);
 				int cmd = TrackPopupMenu(hMenu, TPM_RETURNCMD, pt.x, pt.y, NULL, hWnd, NULL);
 				if (cmd == ID_SHOW)
 					//	MessageBox(hWnd, APP_TIP, APP_NAME, MB_OK);
-					MessageBox(hWnd, "待编写......", "提示", MB_OK);     //提示
+					MessageBox(hWnd,about_hint, "提示", MB_OK);     //提示
 				if (cmd == ID_EXIT)
 					PostMessage(hWnd, WM_DESTROY, NULL, NULL);
 				if (cmd == ID_SHOW2)
-					MessageBox(hWnd, "默认启动系统修改程序\n基于Win32 API实现系统托盘程序\n\t\t-Chales.Yu", "关于", MB_OK);
+					MessageBox(hWnd, "默认启动系统修改程序\n 基于Win32 API实现系统托盘程序\n\t\t-Chales.Yu", "关于", MB_OK);
 				if (cmd == ID_SHOW3)
 				{
 				//	log("win");

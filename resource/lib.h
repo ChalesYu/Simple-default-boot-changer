@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <fstream> 
 #include <windows.h>
-#include <string>
+#include <string.h>
 #include "config.h"
+#include "DblNode.h"
 
 using namespace std;
 HWND hWnd;
@@ -192,13 +193,20 @@ void  movfm ()
 }
 ////////OLD WAY end
 /////
-/////////////NEW WAY
+/////////////NEW WAY updated
 ////
 bool config_file_change(int sys_num)
 {
+	void(*print)(const char &);
+	print = show;
+
+	DblLinkList <char> d;
+
 	fstream foutfile(dt, ios::out | ios::in);
+	char temp_char;
+	int count = 0, count2 = 0, fix_count = 0;
+
 	char ch;
-	char buffer[65534];
 	int i = 0, k = 0;
 	if (!foutfile) {
 		log("不能打开目的文件：config.plist  exiting...");
@@ -207,66 +215,38 @@ bool config_file_change(int sys_num)
 	}
 
 	foutfile.unsetf(ios::skipws);
-	while (foutfile >> ch) {//将文件全部内容读出到buffer
+	while (foutfile >> temp_char) {//读入
 
-		buffer[i] = ch; //cout<<buffer[i];
-		i++;
+								  //buffer[i]=ch;
+		d.Insert(count + 1, temp_char);
+		count++;
 	}
 	foutfile.close();
 	ofstream tinfile(dt);
-	char *show;
 	if (sys_num==2)
 	{
-		show = strstr_rep(buffer, win_str, mac_str);//将win_str替换为mac_str
+	//将win_str替换为mac_str
+		d.strstr_replace_once(win_str, mac_str);
 	}
 	else if (sys_num == 1)
 	{
-		show = strstr_rep(buffer, mac_str, win_str);//将mac_str替换为win_str
+	//将mac_str替换为win_str
+		d.strstr_replace_once(mac_str, win_str);
 	}
 	else { return FALSE; };
-	tinfile << show;
+	fix_count = d.Length();
+	while (count2 != fix_count)//输出文件
+	{
+		tinfile << d.pushchar(count2 + 1);
+		count2++;
+	}
 	tinfile.close();
+	d.~DblLinkList();
 	return TRUE;
-
-	
 
 
 }
 //
-///find&replace function
-char *strstr_rep(char *source, const char *old, const char *ne)//字符替换
-{
-//	cout << "replace" << '\n';
-	char *org = source;
-	char temp[65535];
-	int old_length = (int) strlen(old);//获得将被替换的字符串的大小
-//	int new_length = strlen(ne);
-	int i, j, k,location = -1;
-	for (i = 0; source[i] && (location == -1); ++i)//location查找将被替换的字符串的位置
-	{
-		for (j = i, k = 0; source[j] == old[k]; j++, k++)
-		{
-			if (!old[k + 1])
-				location = i;
-		}
-	}
-	if (location != -1)//开始替换
-	{
-		for (j = 0; j<location; j++)//先把被替换的字符串的前一部分COPY到temp
-			temp[j] = source[j];
-		for (i = 0; ne[i]; i++, j++)//再把替换的新字符串COPY到temp
-			temp[j] = ne[i];
-		for (k = location + old_length; source[k]; k++, j++)//把剩下的内容COPY到temp
-			temp[j] = source[k];
-		//   temp[j]=NULL;
-		 for(i=0;source[i]=temp[i];i++); //把临时字符串temp复制给source
-		//strcpy(source, temp);
-	}
-
-	return org;
-}
-///find&replace function end
-///
 /////////NEW WAY
 private:
 	const char *fm, *fw, *mt, *dt;
