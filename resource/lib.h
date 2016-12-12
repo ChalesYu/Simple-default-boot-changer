@@ -91,6 +91,9 @@ int org;
 };
 class clmm :public core   //clover loader manage maker
 {
+private:
+	const char *fm, *fw, *mt, *dt;
+	//static bool show_detail;
 public: 
 	clmm(const char *fromw, const char *fromm, const char *to, const char *backup, int orgin) :core(orgin) {
 		fw = fromw; fm = fromm; dt = to; mt = to;
@@ -197,32 +200,8 @@ void  movfm ()
 ////
 bool config_file_change(int sys_num)
 {
-	void(*print)(const char &);
-	print = show;
-
 	DblLinkList <char> d;
-
-	fstream foutfile(dt, ios::out | ios::in);
-	char temp_char;
-	int count = 0, count2 = 0, fix_count = 0;
-
-	char ch;
-	int i = 0, k = 0;
-	if (!foutfile) {
-		log("不能打开目的文件：config.plist  exiting...");
-		//cout << "不能打开目的文件：test.txt" << '\n';
-		exit(1);
-	}
-
-	foutfile.unsetf(ios::skipws);
-	while (foutfile >> temp_char) {//读入
-
-								  //buffer[i]=ch;
-		d.Insert(count + 1, temp_char);
-		count++;
-	}
-	foutfile.close();
-	ofstream tinfile(dt);
+	d.Insert_file(1, dt);
 	if (sys_num==2)
 	{
 	//将win_str替换为mac_str
@@ -234,21 +213,11 @@ bool config_file_change(int sys_num)
 		d.strstr_replace_once(mac_str, win_str);
 	}
 	else { return FALSE; };
-	fix_count = d.Length();
-	while (count2 != fix_count)//输出文件
-	{
-		tinfile << d.pushchar(count2 + 1);
-		count2++;
-	}
-	tinfile.close();
+	d.push_out_file(dt);
 	d.~DblLinkList();
 	return TRUE;
-
-
 }
 //
 /////////NEW WAY
-private:
-	const char *fm, *fw, *mt, *dt;
-//static bool show_detail;
+
 };
