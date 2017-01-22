@@ -23,11 +23,12 @@ s400ca 在 VS2015上编译通过
  
  祝好
 
-# Change Log
+Change Log
+----------------
 
-  添加 备份plist文件为config_backuped.plist
+  -添加 备份plist文件为config_backuped.plist
   
-  直接在config.plist内搜索名称进行替换 摆脱对edit文件夹的依赖 具体见config.h
+  -直接在config.plist内搜索名称进行替换 摆脱对edit文件夹的依赖 具体见config.h
 
 
 
