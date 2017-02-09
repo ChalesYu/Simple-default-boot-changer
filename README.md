@@ -17,7 +17,8 @@ it rely on clover bootloader change default boot OS
 在/resource/config.h 里修改为你的路径
 
 
-s400ca 在 VS2015上编译通过
+在 VS2015上编译通过
+在其他版本的VS上需建一个C++空项目，把文件加入项目(详见 HowToUse.md)
  
  以上
  
