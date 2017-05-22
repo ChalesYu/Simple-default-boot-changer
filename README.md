@@ -4,7 +4,7 @@
 it rely on clover bootloader change default boot OS
 
 类似于bootcamp的功能...
-但原理是替换config.plist
+但原理是替换config.plist里面的内容
 
 在我的asus s400ca上同时安装了hackintosh和windows
 
@@ -26,6 +26,8 @@ it rely on clover bootloader change default boot OS
 
 Change Log
 ----------------
+
+  -用新方法替换文件内容，使替换更加快速
 
   -添加 备份plist文件为config_backuped.plist
   
